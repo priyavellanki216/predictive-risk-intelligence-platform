@@ -1,24 +1,49 @@
+// Ledger & Lattice reminder: Swiss editorial hierarchy, asymmetric telemetry bands, mineral ivory + ink + oxidized teal + saffron.
+import { useState } from "react";
+import { Activity, ArrowUpRight, Box, BrainCircuit, Check, ChevronRight, Cloud, Database, FileCode2, GitBranch, Layers3, Menu, Network, Play, ShieldCheck, Sparkles, TerminalSquare, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { Streamdown } from 'streamdown';
+import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
-/**
- * All content in this page are only for example, replace with your own feature implementation
- * When building pages, remember your instructions in Frontend Best Practices, Design Guide and Common Pitfalls
- */
+const layers = [
+  { id: "01", name: "Bronze", desc: "Immutable event landing", volume: "100K+", tone: "teal", icon: Database },
+  { id: "02", name: "Silver", desc: "Quality + feature contract", volume: "98.7%", tone: "ink", icon: Layers3 },
+  { id: "03", name: "Gold", desc: "Risk-ready serving tables", volume: "8.4K", tone: "saffron", icon: Sparkles },
+];
+
+const metrics = [
+  { label: "Risk model AUC-ROC", value: "0.914", delta: "+8.2%", note: "vs. prior champion", color: "teal" },
+  { label: "Precision @ 0.50", value: "0.886", delta: "+5.4%", note: "holdout validation", color: "ink" },
+  { label: "Customer segments", value: "04", delta: "0.61", note: "silhouette score", color: "saffron" },
+  { label: "Serving latency", value: "42 ms", delta: "P95", note: "gold → PostgreSQL", color: "teal" },
+];
+
+function AppMark() {
+  return <div className="mark" aria-label="Predictive Risk Intelligence Platform mark"><span /><i /><b /></div>;
+}
+
 export default function Home() {
-  // If theme is switchable in App.tsx, we can implement theme toggling like this:
-  // const { theme, toggleTheme } = useTheme();
-
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [active, setActive] = useState("Overview");
+  const notify = (message: string) => toast(message);
   return (
-    <div className="min-h-screen flex flex-col">
-      <main>
-        {/* Example: lucide-react for icons */}
-        <Loader2 className="animate-spin" />
-        Example Page
-        {/* Example: Streamdown for markdown rendering */}
-        <Streamdown>Any **markdown** content</Streamdown>
-        <Button variant="default">Example Button</Button>
+    <div className="app-shell">
+      <aside className={`rail ${mobileOpen ? "rail-open" : ""}`}>
+        <div className="rail-brand"><AppMark /><div><strong>PRI</strong><small>RISK INTELLIGENCE</small></div><button className="mobile-close" onClick={() => setMobileOpen(false)}><X size={18}/></button></div>
+        <div className="rail-kicker">Workspace / Azure estate</div>
+        <nav aria-label="Primary navigation">
+          {[{n:"Overview",i:Activity},{n:"Data fabric",i:Layers3},{n:"ML intelligence",i:BrainCircuit},{n:"Infrastructure",i:Cloud},{n:"Runbook",i:TerminalSquare}].map(({n,i:Icon}) => <button key={n} className={`nav-item ${active === n ? "active" : ""}`} onClick={() => {setActive(n); setMobileOpen(false)}}><Icon size={17}/><span>{n}</span>{active === n && <ChevronRight size={14} className="nav-arrow"/>}</button>)}
+        </nav>
+        <div className="rail-bottom"><div className="health-line"><span className="live-dot"/> All systems nominal</div><div className="build-card"><span>BUILD 2.4.0</span><strong>Production candidate</strong><small>Last promoted 11 min ago</small></div></div>
+      </aside>
+      <main className="main-canvas">
+        <header className="topbar"><button className="mobile-menu" onClick={() => setMobileOpen(true)}><Menu size={20}/></button><div className="crumb"><span>PLATFORM</span><ChevronRight size={13}/><strong>{active.toUpperCase()}</strong></div><div className="top-actions"><Badge className="env-badge"><span className="live-dot"/> PROD / EAST US 2</Badge><button className="icon-btn" aria-label="Open repository" onClick={() => notify("Repository link is available in the workspace artifacts.")}><GitBranch size={17}/></button><Button className="inspect-btn" onClick={() => notify("Runbook inspection queued for the latest pipeline run.")}><Play size={14}/> Inspect run</Button></div></header>
+        <section className="hero-band"><div className="hero-copy"><div className="eyebrow"><span className="signal-tab">LIVE SIGNAL</span><span>Predictive risk intelligence / 13 Aug 2026</span></div><h1>Make risk<br/><em>legible.</em></h1><p>A governed Azure data and machine learning platform that turns transactional complexity into explainable decisions — from immutable landing to low-latency serving.</p><div className="hero-actions"><Button className="primary-cta" onClick={() => document.getElementById("architecture")?.scrollIntoView({behavior:"smooth"})}>Explore architecture <ArrowUpRight size={16}/></Button><Button variant="outline" className="secondary-cta" onClick={() => notify("Model card view is ready in the ML intelligence workspace.")}>Open model card</Button></div></div><div className="hero-visual"><img src="/manus-storage/risk-intelligence-hero_18bf85ad.png" alt="Abstract ledger-like data pathways and risk signals"/><div className="hero-stamp"><span>RISK</span><strong>INTELLIGENCE</strong><small>GOVERNED / EXPLAINABLE / READY</small></div></div></section>
+        <section className="signal-strip"><div><span className="strip-label">CURRENT POSTURE</span><strong>Controlled exposure</strong></div><div><span className="strip-label">DATA FRESHNESS</span><strong><span className="live-dot"/> 11 minutes</strong></div><div><span className="strip-label">MODEL VERSION</span><strong>rf-risk-v2.4.0</strong></div><div className="strip-note"><ShieldCheck size={18}/> Lineage verified across Bronze → Silver → Gold</div></section>
+        <section className="section-block" id="architecture"><div className="section-heading"><div><span className="section-index">01 / DATA FABRIC</span><h2>Architecture with a paper trail.</h2></div><p>The platform treats every transition as an auditable contract: raw events are retained, features are cleaned, and decisions are served with lineage attached.</p></div><div className="architecture-grid"><div className="architecture-visual"><img src="/manus-storage/risk-intelligence-architecture_7558f8e0.png" alt="Abstract medallion architecture backdrop"/><div className="pipeline-line"/><div className="layer-stack">{layers.map(({id,name,desc,volume,tone,icon:Icon}) => <div className={`layer-card ${tone}`} key={name}><div className="layer-no">{id}</div><Icon size={19}/><div className="layer-copy"><strong>{name}</strong><small>{desc}</small></div><span className="layer-volume">{volume}</span></div>)}</div><div className="serving-node"><Network size={18}/><span>PostgreSQL<br/><small>serving layer</small></span></div></div><div className="architecture-notes"><div className="note-item"><span>01</span><div><strong>Landing is immutable</strong><p>ADLS Gen2 receives raw activity with event-time partitioning and source metadata preserved for replay.</p></div></div><div className="note-item"><span>02</span><div><strong>Quality is executable</strong><p>Silver contracts normalize schema, remove duplicate IDs, and derive feature-safe interactions.</p></div></div><div className="note-item"><span>03</span><div><strong>Serving is opinionated</strong><p>Gold aggregates customer-level risk features and scores for downstream decision APIs.</p></div></div><button className="text-link" onClick={() => notify("Terraform and pipeline artifacts are included in the workspace.")}>View implementation map <ArrowUpRight size={15}/></button></div></div></section>
+        <section className="section-block metrics-section"><div className="section-heading"><div><span className="section-index">02 / ML INTELLIGENCE</span><h2>Scores with a reason to exist.</h2></div><p>Supervised and unsupervised engines work from the same governed Gold feature contract, with metrics logged before promotion.</p></div><div className="metrics-grid">{metrics.map((m) => <div className={`metric-card ${m.color}`} key={m.label}><span>{m.label}</span><strong>{m.value}</strong><div><b>{m.delta}</b><small>{m.note}</small></div><div className="metric-rule"/></div>)}</div><div className="model-row"><div className="model-card"><div className="model-top"><div><span className="section-index">CHAMPION MODEL</span><h3>Random Forest / default risk</h3></div><Badge className="champion-badge"><Check size={13}/> champion</Badge></div><div className="model-body"><div className="model-graphic"><div className="tree-line one"/><div className="tree-line two"/><div className="tree-line three"/><span className="tree-node a"/><span className="tree-node b"/><span className="tree-node c"/><span className="tree-node d"/><span className="tree-root"/></div><div className="model-copy"><p>Feature importance stays inspectable: balance ratio, late payments, velocity, and fraud rate are the leading signals in the current holdout.</p><div className="feature-list"><span>balance_ratio <b>34%</b></span><span>late_payments <b>28%</b></span><span>velocity_24h <b>22%</b></span></div></div></div></div><div className="segment-card"><div className="segment-header"><span className="section-index">UNSUPERVISED ENGINE</span><span className="cluster-dot"/><strong>K-Means / 4 segments</strong></div><div className="cluster-map"><i className="cluster c1"/><i className="cluster c2"/><i className="cluster c3"/><i className="cluster c4"/><span className="cluster-center"/></div><div className="segment-footer"><span>silhouette score</span><strong>0.61</strong></div></div></div></section>
+        <section className="section-block runbook-section"><div className="section-heading"><div><span className="section-index">03 / DELIVERY SYSTEM</span><h2>Infrastructure that remembers.</h2></div><p>Everything needed to take the platform from notebook to controlled Azure estate is versioned beside the model and validated in CI.</p></div><div className="runbook-grid"><div className="runbook-list">{[{icon:Box,title:"Synthetic data generator",meta:"100,000+ reproducible records",file:"src/utils/generate_transactions.py"},{icon:FileCode2,title:"Medallion pipeline",meta:"Bronze → Silver → Gold",file:"src/pipelines/medallion_pipeline.py"},{icon:Cloud,title:"Terraform estate",meta:"ADF · Databricks · ADLS · AML",file:"terraform/main.tf"},{icon:GitBranch,title:"Azure DevOps pipeline",meta:"Lint · test · plan · apply",file:"ci_cd/azure-pipelines.yml"}].map(({icon:Icon,title,meta,file}) => <button className="runbook-item" key={title} onClick={() => notify(`${file} is included in the project workspace.`)}><span className="runbook-icon"><Icon size={17}/></span><span><strong>{title}</strong><small>{meta}</small></span><code>{file}</code><ArrowUpRight size={15}/></button>)}</div><div className="command-card"><div className="command-top"><TerminalSquare size={18}/><span>LOCAL VERIFICATION</span><Badge>READY</Badge></div><pre><span>$</span> python -m pytest tests -q{`\n`} <em>8 passed in 4.21s</em>{`\n\n`}<span>$</span> terraform fmt -check{`\n`} <em>terraform files are formatted</em>{`\n\n`}</pre><div className="command-foot"><span><Check size={14}/> reproducible run</span><span>commit 5b7c91a</span></div></div></div></section>
+        <footer className="footer"><div className="footer-brand"><AppMark/><span>Predictive Risk Intelligence</span></div><span>Principal Azure Data & ML Architecture / internal reference build</span><span>Ledger & Lattice / 2026</span></footer>
       </main>
     </div>
   );

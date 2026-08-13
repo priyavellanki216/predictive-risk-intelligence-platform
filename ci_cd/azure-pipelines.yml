@@ -1,0 +1,56 @@
+trigger:
+  branches:
+    include: [ main ]
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  pythonVersion: '3.11'
+  terraformVersion: '1.8.5'
+
+stages:
+- stage: Validate
+  displayName: Validate data and ML contracts
+  jobs:
+  - job: PythonQuality
+    steps:
+    - task: UsePythonVersion@0
+      inputs: { versionSpec: '$(pythonVersion)' }
+    - script: python -m pip install --upgrade pip && pip install pandas numpy scikit-learn pyarrow pytest
+      displayName: Install Python dependencies
+    - script: python -m pytest tests -q
+      displayName: Run unit tests
+    - script: python -m compileall src
+      displayName: Compile Python modules
+
+- stage: TerraformPlan
+  displayName: Plan Azure estate
+  dependsOn: Validate
+  jobs:
+  - job: Terraform
+    steps:
+    - task: TerraformInstaller@1
+      inputs: { terraformVersion: '$(terraformVersion)' }
+    - script: terraform -chdir=terraform init -backend=false
+      displayName: Terraform init
+    - script: terraform -chdir=terraform fmt -check -recursive
+      displayName: Terraform format check
+    - script: terraform -chdir=terraform validate
+      displayName: Terraform validate
+    - script: terraform -chdir=terraform plan -out=tfplan
+      displayName: Terraform plan
+
+- stage: Apply
+  displayName: Apply approved infrastructure
+  dependsOn: TerraformPlan
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  jobs:
+  - deployment: ApplyTerraform
+    environment: risk-platform-prod
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: terraform -chdir=terraform apply -auto-approve tfplan
+            displayName: Terraform apply
